@@ -1,0 +1,5 @@
+snapshots/*.snapshot
+logs/
+build/
+Cargo.lock
+target
