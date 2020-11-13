@@ -75,6 +75,7 @@
                   "or_constraint": [],
                   "relative_box_constraint": [],
                   "relative_cylinder_constraint": [],
+                  "self_constraint": [],
                   "relative_sphere_constraint": [
                     {
                       "radius": 50.0
