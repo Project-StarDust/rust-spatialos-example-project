@@ -9,3 +9,6 @@ edition = "2018"
 [dependencies]
 spatialos-macro = { git = "https://github.com/Project-StarDust/spatialos-macro.git" }
 spatialos-sdk = { git = "https://github.com/Project-StarDust/spatialos-sdk.git" }
+
+[build-dependencies]
+spatialos-codegen = { git = "https://github.com/Project-StarDust/spatialos-codegen.git" }

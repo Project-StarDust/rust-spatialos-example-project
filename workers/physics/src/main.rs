@@ -50,6 +50,26 @@ pub fn on_command_request(op: &CommandRequestOp) {
 }
 
 fn main() {
+    let args = std::env::args().collect::<Vec<_>>();
+    if args.len() != 4 {
+        eprintln!(
+            "Usage: {} <hostname> <port> <worker_id>",
+            args.get(0).expect("Can't have program name")
+        );
+        eprintln!("    <hostname>    - hostname of the receptionist to connect to.");
+        eprintln!("    <port>        - port to use.");
+        eprintln!("    <worker_id>   - name of the worker assigned by SpatialOS.");
+        std::process::exit(1);
+    }
+
+    let hostname = args.get(1).unwrap();
+    let port = args
+        .get(2)
+        .unwrap()
+        .parse::<u16>()
+        .expect("Can't parse port to u16");
+    let worker_id = args.get(3).unwrap();
+
     let mut vtables = vec![Position::get_vtable().into()];
     vtables.shrink_to_fit();
 
@@ -57,7 +77,7 @@ fn main() {
         let mut parameters = ConnectionParameters::default();
         parameters.network.connection_type = NetworkConnectionType::ModularKcp;
         parameters.network.modular_kcp.security_type = NetworkSecurityType::Insecure;
-        parameters.worker_type = "test_rust".to_string();
+        parameters.worker_type = "physics".to_string();
         parameters.network.tcp.multiplex_level = 4;
         parameters.default_component_vtable = std::ptr::null();
         parameters.component_vtable_count = vtables.len() as u32;
@@ -65,13 +85,12 @@ fn main() {
         parameters
     };
     let mut connection = {
-        let mut connection =
-            ConnectionFuture::connect_async("localhost", 7777, "test_rust14", parameters);
+        let mut connection = ConnectionFuture::connect_async(hostname, port, worker_id, parameters);
         connection.get(None).expect("Timed out")
     };
     connection.send_log_message(LogMessage::new(
         LogLevel::Warn,
-        "test_rust",
+        "physics",
         "Salut a tous !",
         None,
     ));

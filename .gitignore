@@ -3,3 +3,4 @@ logs/
 build/
 Cargo.lock
 target
+workers/*/src/generated
