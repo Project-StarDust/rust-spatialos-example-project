@@ -12,10 +12,6 @@ use spatialos_sdk::sys_exports::worker::{
     },
     EntityQuery, ResultType,
 };
-use spatialos_sdk::Component;
-
-mod schema_types;
-use schema_types::Position;
 
 pub fn on_disconnect(op: &DisconnectOp) {
     println!("Disconnected: {:?}", op)
@@ -50,9 +46,6 @@ pub fn on_command_request(op: &CommandRequestOp) {
 }
 
 fn main() {
-    let mut vtables = vec![Position::get_vtable().into()];
-    vtables.shrink_to_fit();
-
     let parameters = {
         let mut parameters = ConnectionParameters::default();
         parameters.network.connection_type = NetworkConnectionType::ModularKcp;
@@ -60,8 +53,6 @@ fn main() {
         parameters.worker_type = "test_rust".to_string();
         parameters.network.tcp.multiplex_level = 4;
         parameters.default_component_vtable = std::ptr::null();
-        parameters.component_vtable_count = vtables.len() as u32;
-        parameters.component_vtables = vtables.as_mut_ptr();
         parameters
     };
     let mut connection = {
