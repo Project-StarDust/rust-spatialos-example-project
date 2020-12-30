@@ -1,10 +1,10 @@
-use spatialos_sdk::sys_exports::worker::connection::{ConnectionFuture, ConnectionParameters};
-use spatialos_sdk::sys_exports::worker::constraint::ComponentConstraint;
-use spatialos_sdk::sys_exports::worker::constraint::Constraint;
-use spatialos_sdk::sys_exports::worker::{
+use spatialos::worker::connection::{ConnectionFuture, ConnectionParameters};
+use spatialos::worker::constraint::ComponentConstraint;
+use spatialos::worker::constraint::Constraint;
+use spatialos::worker::{
     connection::NetworkConnectionType, log_message::LogMessage, LogLevel,
 };
-use spatialos_sdk::sys_exports::worker::{
+use spatialos::worker::{
     connection::NetworkSecurityType,
     op::{
         AddComponentOp, AddEntityOp, CommandRequestOp, ComponentUpdateOp, DisconnectOp,
@@ -12,10 +12,6 @@ use spatialos_sdk::sys_exports::worker::{
     },
     EntityQuery, ResultType,
 };
-use spatialos_sdk::Component;
-
-mod schema_types;
-use schema_types::Position;
 
 pub fn on_disconnect(op: &DisconnectOp) {
     println!("Disconnected: {:?}", op)
@@ -70,8 +66,6 @@ fn main() {
         .expect("Can't parse port to u16");
     let worker_id = args.get(3).unwrap();
 
-    let mut vtables = vec![Position::get_vtable().into()];
-    vtables.shrink_to_fit();
 
     let parameters = {
         let mut parameters = ConnectionParameters::default();
@@ -80,8 +74,8 @@ fn main() {
         parameters.worker_type = "physics".to_string();
         parameters.network.tcp.multiplex_level = 4;
         parameters.default_component_vtable = std::ptr::null();
-        parameters.component_vtable_count = vtables.len() as u32;
-        parameters.component_vtables = vtables.as_mut_ptr();
+        parameters.component_vtable_count = 0;
+        parameters.component_vtables = std::ptr::null();
         parameters
     };
     let mut connection = {

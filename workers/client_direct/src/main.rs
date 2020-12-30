@@ -1,10 +1,10 @@
-use spatialos_sdk::sys_exports::worker::connection::{ConnectionFuture, ConnectionParameters};
-use spatialos_sdk::sys_exports::worker::constraint::ComponentConstraint;
-use spatialos_sdk::sys_exports::worker::constraint::Constraint;
-use spatialos_sdk::sys_exports::worker::{
+use spatialos::worker::connection::{ConnectionFuture, ConnectionParameters};
+use spatialos::worker::constraint::ComponentConstraint;
+use spatialos::worker::constraint::Constraint;
+use spatialos::worker::{
     connection::NetworkConnectionType, log_message::LogMessage, LogLevel,
 };
-use spatialos_sdk::sys_exports::worker::{
+use spatialos::worker::{
     connection::NetworkSecurityType,
     op::{
         AddComponentOp, AddEntityOp, CommandRequestOp, ComponentUpdateOp, DisconnectOp,

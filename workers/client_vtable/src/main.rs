@@ -1,25 +1,21 @@
-use spatialos_sdk::sys_exports::worker::{
-    connection::NetworkConnectionType, log_message::LogMessage, LogLevel,
-};
-use spatialos_sdk::sys_exports::worker::{
-    connection::NetworkSecurityType,
+use spatialos::worker::{
+    connection::{
+        ConnectionFuture, ConnectionParameters, NetworkConnectionType, NetworkSecurityType,
+    },
+    constraint::{Constraint, EntityIdConstraint},
+    log_message::LogMessage,
     op::{
         AddComponentOp, CommandRequestOp, ComponentUpdateOp, DisconnectOp, EntityQueryResponseOp,
         LogMessageOp, WorkerOp,
     },
-    EntityQuery, ResultType,
+    EntityQuery, LogLevel, ResultType,
 };
-use spatialos_sdk::sys_exports::worker::{
-    connection::{ConnectionFuture, ConnectionParameters},
-    constraint::EntityIdConstraint,
-};
-use spatialos_sdk::Component;
-use spatialos_sdk::{sys_exports::worker::constraint::Constraint, Type};
 
-mod schema_types;
-use schema_types::ClientData;
-use schema_types::Coordinates;
-use schema_types::Position;
+use spatialos_sdk::Component;
+
+pub mod generated;
+
+use generated::{improbable::Position, sample::ClientData};
 
 const WORKER_TYPE: &str = "client_vtable";
 
@@ -31,7 +27,7 @@ pub fn on_log_message(op: &LogMessageOp) {
 }
 
 pub fn on_disconnect(op: &DisconnectOp) {
-    println!("disconnected. reason: {}", op.reason)
+    println!("disconnected. reason: {}", op.reason);
 }
 
 pub fn on_entity_query_response(op: &EntityQueryResponseOp) {
@@ -94,14 +90,11 @@ pub fn on_component_update(op: &ComponentUpdateOp) {
     if op.update.component_id == Position::ID {
         let position =
             unsafe { Box::from_raw(op.update.user_handle as *mut <Position as Component>::Update) };
-        if !position.coords.is_null() {
-            let coords =
-                unsafe { Box::from_raw(position.coords as *mut <Coordinates as Type>::Update) };
+        if let Some(coords) = &position.coords {
             println!(
                 "received improbable.Position update data ({}, {}, {})",
                 coords.x, coords.y, coords.z
             );
-            Box::into_raw(coords);
         }
         Box::into_raw(position);
     }
